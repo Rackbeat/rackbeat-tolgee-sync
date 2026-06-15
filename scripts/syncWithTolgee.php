@@ -1,0 +1,97 @@
+<?php
+
+/*
+ * This script downloads REVIEWED translations from Tolgee and updates local translation files
+ * It should be run from the Laravel project root via: php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
+ */
+
+// Bootstrap Laravel
+require __DIR__ . '/../../../autoload.php';
+$app = require_once __DIR__ . '/../../../../bootstrap/app.php';
+$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+use Rackbeat\TolgeeSync\Builders\TolgeeBuilder;
+use Rackbeat\TolgeeSync\LocalKeyManager;
+
+$tolgeeBuilder = new TolgeeBuilder(config('tolgee.api_key'));
+$localManager = new LocalKeyManager();
+$projects = getProjects($tolgeeBuilder);
+$languagesSynced = [];
+
+foreach ($projects as $project) {
+    info("Starting sync for project {$project}.");
+    $languages = array_filter(
+        getLanguages($tolgeeBuilder, $project),
+        fn($language) => !in_array($language, $languagesSynced)
+    );
+
+    foreach ($languages as $language) {
+        $page = 0;
+        $end = false;
+        info("Getting translations for locale: {$language}");
+
+        while(!$end) {
+            $translations = $tolgeeBuilder
+                ->translations()
+                ->forLanguage($language)
+                ->page($page)
+                ->take(1000)
+                ->get();
+
+            if(property_exists($translations, '_embedded')) {
+                unpackAndStore($translations->_embedded, $localManager);
+            }
+
+            if(isLastPage($translations)) {
+                $end = true;
+            }
+            $page++;
+        }
+        info("Languages updated for locale: {$language}");
+        $languagesSynced[] = $language;
+    }
+}
+
+function unpackAndStore($translations, $localManager) {
+    $namespacePrefix = config('tolgee.namespace_prefix');
+    $skipNamespaces = config('tolgee.skip_namespaces');
+    $syncState = config('tolgee.sync_state');
+
+    foreach ($translations->keys as $translation) {
+        if(strpos($translation->keyNamespace, $namespacePrefix) === false) {
+            continue;
+        }
+
+        $file = substr($translation->keyNamespace, strlen($namespacePrefix));
+
+        if(in_array($file, $skipNamespaces)) {
+            continue;
+        }
+
+        $key = $translation->keyName;
+        foreach ($translation->translations as $locale => $translated) {
+            if($translated->text && $translated->state === $syncState) {
+                $localManager->storeKey($locale, $file, $key, $translated->text);
+            }
+        }
+    }
+}
+
+function info(string $message) {
+    echo $message . PHP_EOL;
+}
+
+function isLastPage($translations): bool {
+    return $translations->page->number >= $translations->page->totalPages - 1;
+}
+
+function getLanguages($tolgeeBuilder, $projectId): array {
+    $languagesResponse = $tolgeeBuilder->setProject($projectId)->languages()->get();
+    return array_map(fn($language) => $language->tag, $languagesResponse->_embedded->languages);
+}
+
+function getProjects($tolgeeBuilder): array {
+    $projectsResponse = $tolgeeBuilder->projects()->orderBy('id', 'asc')->get();
+    return array_map(fn($project) => $project->id, $projectsResponse->_embedded->projects);
+}
+

@@ -1,0 +1,34 @@
+# Dependencies
+/vendor/
+composer.lock
+
+# Testing
+.phpunit.result.cache
+.phpunit.cache
+coverage/
+.coverage-html/
+
+# Code quality caches
+.php-cs-fixer.cache
+phpstan.neon.dist
+
+# OS & IDE files
+.DS_Store
+.idea/
+.vscode/
+
+# CI/CD
+.github/workflows/
+
+# Internal planning & utility scripts (not needed by consumers)
+ACTION-PLAN.md
+DEPLOYMENT.md
+PRODUCTION-READY.md
+COMPOSER-ANALYSIS.md
+DEPENDENCIES.md
+LARAVEL-12-UPDATE.md
+SECURITY-AUDIT.md
+TESTING.md
+production-check.sh
+quickstart.sh
+
