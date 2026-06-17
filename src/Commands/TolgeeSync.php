@@ -16,7 +16,7 @@ class TolgeeSync extends Command
     protected array $projectLocales;
     protected string $masterLocale;
     protected string $masterFolder;
-    protected string $namespacePrefix;
+    protected ?string $namespacePrefix;
     protected string $file = '*';
 
     public function __construct()
@@ -30,6 +30,13 @@ class TolgeeSync extends Command
 
     public function handle()
     {
+        if (empty($this->namespacePrefix)) {
+            $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
+            $this->line('  env:');
+            $this->line('    TOLGEE_NAMESPACE_PREFIX: ${{ github.event.repository.name }}_');
+            return 1;
+        }
+
         $masterKeys = $this->getMasterKeys();
         $this->info('Searching for new keys...');
         $bar = $this->output->createProgressBar(count($masterKeys));
