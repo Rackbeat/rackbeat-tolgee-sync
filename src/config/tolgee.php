@@ -12,10 +12,7 @@ return [
 
     'api_key' => env('TOLGEE_API_TOKEN'),
 
-    /*
-     * Namespace prefix for organizing keys in Tolgee
-     */
-    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX', 'b2b_'),
+    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX'),
 
     /*
      * Master locale used as source of truth
