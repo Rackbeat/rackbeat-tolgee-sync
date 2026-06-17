@@ -35,24 +35,45 @@ class TolgeeSync extends Command
         $bar = $this->output->createProgressBar(count($masterKeys));
         $bar->start();
 
+        $created = 0;
+        $skipped = 0;
+        $failed  = 0;
+
         foreach ($masterKeys as $masterKey) {
             $tolgeeBuilder = $this->getTolgeeBuilder();
             $data = $this->prepareData($masterKey);
-            $response = $tolgeeBuilder->keys()->post($data);
 
-            if ($this->translationCreated($response)) {
-                $this->continueWithTranslateAndContext($response, $masterKey, $tolgeeBuilder);
+            try {
+                $response = $tolgeeBuilder->keys()->post($data);
+
+                if ($this->translationCreated($response)) {
+                    $created++;
+                    $this->continueWithTranslateAndContext($response, $masterKey, $tolgeeBuilder);
+                } else {
+                    $skipped++;
+                    $errorMessage = isset($response->message) ? $response->message : json_encode($response);
+                    $this->newLine();
+                    $this->warn("Skipped [{$masterKey}]: {$errorMessage}");
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $this->newLine();
+                $this->error("Failed [{$masterKey}]: " . $e->getMessage());
             }
+
             $bar->advance();
             usleep(250);
         }
+
         $bar->finish();
-        $this->info(PHP_EOL . 'All tolgee translations added');
+        $this->newLine();
+        $this->info("Done — Created: {$created} | Skipped: {$skipped} | Failed: {$failed}");
     }
 
     protected function getTolgeeBuilder(): TolgeeBuilder
     {
-        $apiKey = $this->option('tolgee-token') ?? config('tolgee.api_key');
+        // Use ?: instead of ?? to also catch empty string tokens
+        $apiKey = $this->option('tolgee-token') ?: config('tolgee.api_key');
         return (new TolgeeBuilder($apiKey))->setProject(config('tolgee.base_project'));
     }
 

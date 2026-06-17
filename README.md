@@ -48,7 +48,7 @@ php artisan vendor:publish --tag=tolgee-config
 Add to your `.env`:
 
 ```env
-TOLGEE_API_KEY=your-api-key-here
+TOLGEE_API_TOKEN=your-api-key-here
 TOLGEE_BASE_URL=https://translations.rkbt.io/v2/projects
 TOLGEE_BASE_PROJECT=1
 TOLGEE_NAMESPACE_PREFIX=b2b_
@@ -239,7 +239,7 @@ jobs:
           CHANGED_FILES=$(git diff --name-only origin/staging HEAD | grep '^resources/lang/')
           for file in $CHANGED_FILES; do
             file_name=$(basename "$file")
-            php artisan tolgee:update --file="$file_name" --yes-to-all --tolgee-token="${{ secrets.TOLGEE_API_KEY }}"
+            php artisan tolgee:update --file="$file_name" --yes-to-all --tolgee-token="${{ secrets.TOLGEE_API_TOKEN }}"
           done
 ```
 
@@ -274,7 +274,7 @@ jobs:
       
       - name: Sync Tolgee Translations
         env:
-          TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
+          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
         run: php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
       
       - name: Commit changes
@@ -298,8 +298,8 @@ Go to your GitHub repository → **Settings** → **Secrets and variables** → 
 
 Click **"New repository secret"** and add:
 
-#### `TOLGEE_API_KEY`
-- **Name:** `TOLGEE_API_KEY`
+#### `TOLGEE_API_TOKEN`
+- **Name:** `TOLGEE_API_TOKEN`
 - **Value:** Your Tolgee API key from `https://translations.rkbt.io`
 - **Used for:** Authenticating with Tolgee to upload/download translations
 
@@ -339,7 +339,7 @@ return [
     'base_url' => env('TOLGEE_BASE_URL', 'https://translations.rkbt.io/v2/projects'),
     'base_project' => env('TOLGEE_BASE_PROJECT', 1),
     'sync_state' => env('TOLGEE_SYNC_STATE', 'REVIEWED'),
-    'api_key' => env('TOLGEE_API_KEY'),
+    'api_key' => env('TOLGEE_API_TOKEN'),
     'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX', 'b2b_'),
     'master_locale' => env('TOLGEE_MASTER_LOCALE', 'en'),
     'master_folder' => 'resources/lang',

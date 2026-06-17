@@ -2,6 +2,8 @@
 
 namespace Rackbeat\TolgeeSync\Requests;
 
+use Rackbeat\TolgeeSync\Exceptions\TolgeeException;
+
 class Request
 {
     protected $path;
@@ -9,6 +11,7 @@ class Request
     protected $headers = [];
     protected $queryParams = [];
     protected $requestData = [];
+    protected $timeout = 30;
 
     public function __construct(string $baseUrl, array $headers = [])
     {
@@ -39,14 +42,23 @@ class Request
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->getHeaders());
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
 
-        $output = curl_exec($curl);
+        $output   = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         if (curl_errno($curl)) {
-            echo 'Curl error: ' . curl_error($curl);
+            $error = curl_error($curl);
+            curl_close($curl);
+            throw TolgeeException::apiRequestFailed($error);
         }
 
         curl_close($curl);
+
+        if ($httpCode >= 400) {
+            throw TolgeeException::apiRequestFailed("HTTP {$httpCode}: {$output}", $httpCode);
+        }
 
         return json_decode($output);
     }
@@ -61,14 +73,24 @@ class Request
         curl_setopt($curl, CURLOPT_POSTFIELDS, $this->requestData);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->getHeaders());
+        curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
 
         $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         if (curl_errno($curl)) {
-            echo 'Curl error: ' . curl_error($curl);
+            $error = curl_error($curl);
+            curl_close($curl);
+            throw TolgeeException::apiRequestFailed($error);
         }
 
         curl_close($curl);
+
+        // 409 = key already exists in Tolgee — return decoded so caller can handle gracefully
+        if ($httpCode >= 400 && $httpCode !== 409) {
+            throw TolgeeException::apiRequestFailed("HTTP {$httpCode}: {$response}", $httpCode);
+        }
 
         return json_decode($response);
     }
@@ -94,7 +116,6 @@ class Request
         if (curl_errno($curl)) {
             $error = curl_error($curl);
             curl_close($curl);
-
             throw TolgeeException::apiRequestFailed($error);
         }
 
@@ -126,4 +147,3 @@ class Request
         return $this->headers;
     }
 }
-

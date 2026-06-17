@@ -8,7 +8,7 @@ class TolgeeException extends Exception
 {
     public static function missingApiKey(): self
     {
-        return new self('Tolgee API key is not configured. Please set TOLGEE_API_KEY in your .env file.');
+        return new self('Tolgee API key is not configured. Please set TOLGEE_API_TOKEN in your .env file.');
     }
 
     public static function missingProject(): self

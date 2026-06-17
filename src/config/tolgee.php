@@ -10,7 +10,7 @@ return [
 
     'sync_state' => env('TOLGEE_SYNC_STATE', 'REVIEWED'),
 
-    'api_key' => env('TOLGEE_API_KEY'),
+    'api_key' => env('TOLGEE_API_TOKEN'),
 
     /*
      * Namespace prefix for organizing keys in Tolgee
