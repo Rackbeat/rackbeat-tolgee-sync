@@ -54,24 +54,37 @@ foreach ($projects as $project) {
 
 function unpackAndStore($translations, $localManager) {
     $namespacePrefix = config('tolgee.namespace_prefix');
-    $skipNamespaces = config('tolgee.skip_namespaces');
-    $syncState = config('tolgee.sync_state');
+    $skipNamespaces  = config('tolgee.skip_namespaces');
+    $syncState       = config('tolgee.sync_state');
+
+    if (empty($namespacePrefix)) {
+        echo 'Error: TOLGEE_NAMESPACE_PREFIX is not set. Set it in your workflow:' . PHP_EOL;
+        echo '  env:' . PHP_EOL;
+        echo '    TOLGEE_NAMESPACE_PREFIX: $(echo \'${{ github.event.repository.name }}\' | tr \'[:upper:]\' \'[:lower:]\')_' . PHP_EOL;
+        exit(1);
+    }
 
     foreach ($translations->keys as $translation) {
-        if(strpos($translation->keyNamespace, $namespacePrefix) === false) {
+        if (strpos($translation->keyNamespace, $namespacePrefix) === false) {
             continue;
         }
 
         $file = substr($translation->keyNamespace, strlen($namespacePrefix));
 
-        if(in_array($file, $skipNamespaces)) {
+        if (in_array($file, $skipNamespaces)) {
+            info("  ⏭ [{$file}] skipped — namespace is in skip_namespaces");
             continue;
         }
 
         $key = $translation->keyName;
         foreach ($translation->translations as $locale => $translated) {
-            if($translated->text && $translated->state === $syncState) {
+            if ($translated->text && $translated->state === $syncState) {
                 $localManager->storeKey($locale, $file, $key, $translated->text);
+                info("  ✓ [{$locale}] {$file}.{$key} = \"{$translated->text}\"");
+            } elseif (!$translated->text) {
+                info("  ⚠ [{$locale}] {$file}.{$key} skipped — empty translation");
+            } else {
+                info("  ⚠ [{$locale}] {$file}.{$key} skipped — state is \"{$translated->state}\" (expected \"{$syncState}\")");
             }
         }
     }
@@ -94,4 +107,3 @@ function getProjects($tolgeeBuilder): array {
     $projectsResponse = $tolgeeBuilder->projects()->orderBy('id', 'asc')->get();
     return array_map(fn($project) => $project->id, $projectsResponse->_embedded->projects);
 }
-

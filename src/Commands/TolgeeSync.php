@@ -33,7 +33,7 @@ class TolgeeSync extends Command
         if (empty($this->namespacePrefix)) {
             $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
             $this->line('  env:');
-            $this->line('    TOLGEE_NAMESPACE_PREFIX: ${{ github.event.repository.name }}_');
+            $this->line("    TOLGEE_NAMESPACE_PREFIX: \$(echo '\${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')_");
             return 1;
         }
 
@@ -55,17 +55,24 @@ class TolgeeSync extends Command
 
                 if ($this->translationCreated($response)) {
                     $created++;
+                    $this->newLine();
+                    $this->line("  <fg=green>✓</> Created <fg=cyan>[{$masterKey}]</>");
+                    foreach ($data['translations'] as $locale => $value) {
+                        if (!empty($value)) {
+                            $this->line("      <fg=gray>[{$locale}]</> {$value}");
+                        }
+                    }
                     $this->continueWithTranslateAndContext($response, $masterKey, $tolgeeBuilder);
                 } else {
                     $skipped++;
                     $errorMessage = isset($response->message) ? $response->message : json_encode($response);
                     $this->newLine();
-                    $this->warn("Skipped [{$masterKey}]: {$errorMessage}");
+                    $this->warn("  ⚠ Skipped [{$masterKey}]: {$errorMessage}");
                 }
             } catch (\Throwable $e) {
                 $failed++;
                 $this->newLine();
-                $this->error("Failed [{$masterKey}]: " . $e->getMessage());
+                $this->error("  ✗ Failed [{$masterKey}]: " . $e->getMessage());
             }
 
             $bar->advance();
