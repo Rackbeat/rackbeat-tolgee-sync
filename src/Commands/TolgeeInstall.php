@@ -15,7 +15,10 @@ class TolgeeInstall extends Command
         $workflowDir = base_path('.github/workflows');
 
         if (!is_dir($workflowDir)) {
-            mkdir($workflowDir, 0755, true);
+        if (!mkdir($workflowDir, 0755, true) && !is_dir($workflowDir)) {
+            $this->error("Failed to create directory: {$workflowDir}");
+            return self::FAILURE;
+        }
             $this->line("  <fg=green>✓</> Created directory <fg=cyan>.github/workflows/</>");
         }
 
@@ -33,7 +36,10 @@ class TolgeeInstall extends Command
                 continue;
             }
 
-            copy($stub, $destination);
+            if (!is_file($stub) || !copy($stub, $destination)) {
+                $this->error("Failed to publish workflow file: .github/workflows/{$filename}");
+                return self::FAILURE;
+            }
             $this->line("  <fg=green>✓</> Created <fg=cyan>.github/workflows/{$filename}</>");
         }
 

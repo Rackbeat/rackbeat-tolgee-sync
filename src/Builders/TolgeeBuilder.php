@@ -3,6 +3,7 @@
 namespace Rackbeat\TolgeeSync\Builders;
 
 use Rackbeat\TolgeeSync\Requests\Request;
+use Rackbeat\TolgeeSync\Exceptions\TolgeeException;
 
 class TolgeeBuilder extends Request {
 

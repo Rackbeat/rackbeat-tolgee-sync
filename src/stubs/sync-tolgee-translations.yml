@@ -46,7 +46,7 @@ jobs:
         run: |
           git config --global user.email "bot@rackbeat.com"
           git config --global user.name "Rackbeat Bot"
-          git add .
+          git add resources/lang
           git commit -m 'Apply changes from Tolgee' || exit 0
           git push
 

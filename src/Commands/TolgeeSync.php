@@ -17,7 +17,7 @@ class TolgeeSync extends Command
     protected string $masterLocale;
     protected string $masterFolder;
     protected ?string $namespacePrefix;
-    protected string $file = '*';
+    protected string $file = '*.php';
 
     public function __construct()
     {

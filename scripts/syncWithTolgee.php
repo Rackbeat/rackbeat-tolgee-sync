@@ -65,7 +65,7 @@ function unpackAndStore($translations, $localManager) {
     }
 
     foreach ($translations->keys as $translation) {
-        if (strpos($translation->keyNamespace, $namespacePrefix) === false) {
+        if (strpos($translation->keyNamespace, $namespacePrefix) !== 0) {
             continue;
         }
 
@@ -100,10 +100,16 @@ function isLastPage($translations): bool {
 
 function getLanguages($tolgeeBuilder, $projectId): array {
     $languagesResponse = $tolgeeBuilder->setProject($projectId)->languages()->get();
+    if (!isset($languagesResponse->_embedded->languages)) {
+        return [];
+    }
     return array_map(fn($language) => $language->tag, $languagesResponse->_embedded->languages);
 }
 
 function getProjects($tolgeeBuilder): array {
     $projectsResponse = $tolgeeBuilder->projects()->orderBy('id', 'asc')->get();
+    if (!isset($projectsResponse->_embedded->projects)) {
+        return [];
+    }
     return array_map(fn($project) => $project->id, $projectsResponse->_embedded->projects);
 }

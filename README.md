@@ -47,9 +47,11 @@ This will create:
 - `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR
 
 To overwrite existing files:
+
 ```bash
 php artisan tolgee:install --force
 ```
+
 
 After running the command, make sure to:
 1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets
@@ -115,7 +117,7 @@ return [
     'base_project'     => env('TOLGEE_BASE_PROJECT', 1),
     'sync_state'       => env('TOLGEE_SYNC_STATE', 'REVIEWED'),
     'api_key'          => env('TOLGEE_API_TOKEN'),
-    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX', 'your_repository_name_'), // ⚠️ Set via TOLGEE_NAMESPACE_PREFIX env var. Must end with underscore and be lowercase. In GitHub Actions, use: ${{ github.event.repository.name }}_
+    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX'), // ⚠️ Set via TOLGEE_NAMESPACE_PREFIX env var. Must end with underscore and be lowercase. In GitHub Actions, use: ${{ github.event.repository.name }}_
     'master_locale'    => env('TOLGEE_MASTER_LOCALE', 'en'),
     'master_folder'    => 'resources/lang',
     'project_locales'  => [
