@@ -18,7 +18,9 @@ class TolgeeSyncCommandTest extends TestCase
     /** @test */
     public function it_has_correct_command_signature(): void
     {
-        $command = Artisan::all()['tolgee:update'];
+        $commands = Artisan::all();
+        $this->assertArrayHasKey('tolgee:update', $commands);
+        $command = $commands['tolgee:update'];
 
         $definition = $command->getDefinition();
 

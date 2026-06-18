@@ -33,11 +33,10 @@ class ConfigurationTest extends TestCase
     /** @test */
     public function it_can_publish_configuration(): void
     {
-        $configPath = config_path('tolgee.php');
-
-        // In a real scenario, you would test the actual file existence
-        // For now, we just verify the service provider is set up correctly
-        $this->assertTrue(true);
+        $paths = \Illuminate\Support\ServiceProvider::pathsToPublish(
+            \Rackbeat\TolgeeSync\TolgeeSyncServiceProvider::class);
+        $this->assertNotEmpty($paths);
+        $this->assertContains(config_path('tolgee.php'), array_values($paths));
     }
 }
 
