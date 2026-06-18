@@ -34,6 +34,28 @@ Add to your project's `composer.json`:
 composer require rackbeat/rackbeat-tolgee-sync
 ```
 
+### 3. Publish GitHub Actions Workflows
+
+Run this command to automatically create both workflow files:
+
+```bash
+php artisan tolgee:install
+```
+
+This will create:
+- `.github/workflows/auto-upload-translation-keys.yml` — uploads changed keys on push
+- `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR
+
+To overwrite existing files:
+```bash
+php artisan tolgee:install --force
+```
+
+After running the command, make sure to:
+1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets
+2. Add `COMPOSER_AUTH` to your GitHub repository secrets
+3. Update the branch name in `sync-tolgee-translations.yml` if needed (default: `master`)
+
 > Configuration is done via GitHub Secrets and environment variables, so no additional setup is required after installation.
 
 ## Usage
@@ -67,25 +89,7 @@ php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
 
 ## GitHub Actions Integration
 
-Run this command after installing the package to automatically create both workflow files:
-
-```bash
-php artisan tolgee:install
-```
-
-This will create:
-- `.github/workflows/auto-upload-translation-keys.yml` — uploads changed keys on push
-- `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR
-
-To overwrite existing files:
-```bash
-php artisan tolgee:install --force
-```
-
-After running the command, make sure to:
-1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets
-2. Add `COMPOSER_AUTH` to your GitHub repository secrets
-3. Update the branch name in `sync-tolgee-translations.yml` if needed (default: `master`)
+See [Installation Step 3](#3-publish-github-actions-workflows) above for setup instructions.
 
 
 ### Required GitHub Secrets

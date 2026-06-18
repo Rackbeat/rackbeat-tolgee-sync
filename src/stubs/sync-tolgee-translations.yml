@@ -18,6 +18,10 @@ jobs:
         run: |
           CONSTRAINT=$(jq -r '.require.php // "8.2"' composer.json)
           PHP_VERSION=$(echo "$CONSTRAINT" | grep -oP '\d+\.\d+' | head -1)
+          # Enforce minimum PHP 7.4 (required by rackbeat/rackbeat-tolgee-sync)
+          if [ "$(echo "$PHP_VERSION 7.4" | tr ' ' '\n' | sort -V | head -1)" != "7.4" ]; then
+            PHP_VERSION="7.4"
+          fi
           echo "version=${PHP_VERSION:-8.2}" >> $GITHUB_OUTPUT
 
       - uses: shivammathur/setup-php@v2
