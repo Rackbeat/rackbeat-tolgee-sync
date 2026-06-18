@@ -11,9 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get PHP version from composer.json
+        id: php-version
+        run: |
+          CONSTRAINT=$(jq -r '.require.php // "8.2"' composer.json)
+          PHP_VERSION=$(echo "$CONSTRAINT" | grep -oP '\d+\.\d+' | head -1)
+          echo "version=${PHP_VERSION:-8.2}" >> $GITHUB_OUTPUT
+
       - uses: shivammathur/setup-php@v2
         with:
-          php-version-file: 'composer.json'
+          php-version: ${{ steps.php-version.outputs.version }}
 
       - name: Install Dependencies
         env:
