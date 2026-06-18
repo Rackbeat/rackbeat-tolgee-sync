@@ -39,8 +39,6 @@ class TolgeeSync extends Command
 
         $masterKeys = $this->getMasterKeys();
         $this->info('Searching for new keys...');
-        $bar = $this->output->createProgressBar(count($masterKeys));
-        $bar->start();
 
         $created = 0;
         $skipped = 0;
@@ -55,7 +53,6 @@ class TolgeeSync extends Command
 
                 if ($this->translationCreated($response)) {
                     $created++;
-                    $this->newLine();
                     $this->line("  <fg=green>✓</> Created <fg=cyan>[{$masterKey}]</>");
                     foreach ($data['translations'] as $locale => $value) {
                         if (!empty($value)) {
@@ -66,22 +63,24 @@ class TolgeeSync extends Command
                 } else {
                     $skipped++;
                     $errorMessage = isset($response->message) ? $response->message : json_encode($response);
-                    $this->newLine();
                     $this->warn("  ⚠ Skipped [{$masterKey}]: {$errorMessage}");
                 }
             } catch (\Throwable $e) {
-                $failed++;
-                $this->newLine();
-                $this->error("  ✗ Failed [{$masterKey}]: " . $e->getMessage());
+                // Treat "key already exists" (HTTP 400 key_exists) as a skip, not a failure
+                if (str_contains($e->getMessage(), 'key_exists')) {
+                    $skipped++;
+                    $this->line("  <fg=yellow>⏭</> Already exists [{$masterKey}]");
+                } else {
+                    $failed++;
+                    $this->error("  ✗ Failed [{$masterKey}]: " . $e->getMessage());
+                }
             }
 
-            $bar->advance();
             usleep(250);
         }
 
-        $bar->finish();
         $this->newLine();
-        $this->info("Done — Created: {$created} | Skipped: {$skipped} | Failed: {$failed}");
+        $this->info("Done — Created: {$created} | Skipped (exists): {$skipped} | Failed: {$failed}");
     }
 
     protected function getTolgeeBuilder(): TolgeeBuilder
