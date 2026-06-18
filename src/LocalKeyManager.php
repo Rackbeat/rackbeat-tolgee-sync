@@ -6,6 +6,10 @@ class LocalKeyManager {
 
     public function storeKey($locale, $file, $key, $value)
     {
+        if (empty($value)) {
+            return;
+        }
+
         $path = base_path("resources/lang/{$locale}/" . $file . '.php');
 
         if (file_exists($path)) {
@@ -26,6 +30,13 @@ class LocalKeyManager {
             $output = "<?php\n\nreturn [\n" . $this->formatArray($translations, 1) . "];\n";
             file_put_contents($path, $output);
         } else {
+            $directory = dirname($path);
+
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+                echo "Directory: resources/lang/{$locale}/ does not exist. Creating..." . PHP_EOL;
+            }
+
             echo "File: {$file} does not exist. Creating..." . PHP_EOL;
             file_put_contents($path, "<?php\n\nreturn [\n];\n");
             $this->storeKey($locale, $file, $key, $value);
