@@ -67,88 +67,26 @@ php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
 
 ## GitHub Actions Integration
 
-### Upload on Push
+Run this command after installing the package to automatically create both workflow files:
 
-Create `.github/workflows/auto-upload-translation-keys.yml` in your project:
-
-```yaml
-name: Upload Translations
-
-on:
-  push:
-    paths:
-      - 'resources/lang/**/*'
-
-jobs:
-  tolgee-sync:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version-file: 'composer.json'
-
-      - name: Install Dependencies
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{secrets.COMPOSER_AUTH}}"} }'
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
-
-      - name: Upload to Tolgee
-        env:
-          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
-          TOLGEE_NAMESPACE_PREFIX: ${{ github.event.repository.name }}_
-        run: |
-          CHANGED_FILES=$(git diff --name-only origin/staging HEAD | grep '^resources/lang/')
-          for file in $CHANGED_FILES; do
-            file_name=$(basename "$file")
-            php artisan tolgee:update --file="$file_name" --yes-to-all
-          done
+```bash
+php artisan tolgee:install
 ```
 
-### Download on PR
+This will create:
+- `.github/workflows/auto-upload-translation-keys.yml` — uploads changed keys on push
+- `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR
 
-Create `.github/workflows/sync-tolgee-translations.yml` in your project:
-
-```yaml
-name: Sync Tolgee Translations
-
-on:
-  pull_request:
-    types: ['opened']
-    branches: [ "master" ]
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version-file: 'composer.json'
-
-      - name: Install Dependencies
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{secrets.COMPOSER_AUTH}}"} }'
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
-
-      - name: Sync Tolgee Translations
-        env:
-          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
-          TOLGEE_NAMESPACE_PREFIX: ${{ github.event.repository.name }}_
-        run: php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
-
-      - name: Commit changes
-        run: |
-          git config --global user.email "bot@rackbeat.com"
-          git config --global user.name "Rackbeat Bot"
-          git add .
-          git commit -m 'Apply changes from Tolgee' || exit 0
-          git push
+To overwrite existing files:
+```bash
+php artisan tolgee:install --force
 ```
+
+After running the command, make sure to:
+1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets
+2. Add `COMPOSER_AUTH` to your GitHub repository secrets
+3. Update the branch name in `sync-tolgee-translations.yml` if needed (default: `master`)
+
 
 ### Required GitHub Secrets
 
@@ -173,7 +111,7 @@ return [
     'base_project'     => env('TOLGEE_BASE_PROJECT', 1),
     'sync_state'       => env('TOLGEE_SYNC_STATE', 'REVIEWED'),
     'api_key'          => env('TOLGEE_API_TOKEN'),
-    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX', 'your_repository_name_'), // ⚠️ Set via TOLGEE_NAMESPACE_PREFIX env var. Must end with underscore. In GitHub Actions, use: ${{ github.event.repository.name }}_
+    'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX', 'your_repository_name_'), // ⚠️ Set via TOLGEE_NAMESPACE_PREFIX env var. Must end with underscore and be lowercase. In GitHub Actions, use: ${{ github.event.repository.name }}_
     'master_locale'    => env('TOLGEE_MASTER_LOCALE', 'en'),
     'master_folder'    => 'resources/lang',
     'project_locales'  => [

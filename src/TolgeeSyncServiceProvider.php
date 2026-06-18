@@ -3,6 +3,7 @@
 namespace Rackbeat\TolgeeSync;
 
 use Illuminate\Support\ServiceProvider;
+use Rackbeat\TolgeeSync\Commands\TolgeeInstall;
 use Rackbeat\TolgeeSync\Commands\TolgeeSync;
 
 class TolgeeSyncServiceProvider extends ServiceProvider
@@ -20,6 +21,7 @@ class TolgeeSyncServiceProvider extends ServiceProvider
             // Register commands
             $this->commands([
                 TolgeeSync::class,
+                TolgeeInstall::class,
             ]);
 
             // Publish configuration

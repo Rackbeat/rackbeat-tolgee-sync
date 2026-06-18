@@ -1,0 +1,36 @@
+name: Upload Translations
+
+on:
+  push:
+    paths:
+      - 'resources/lang/**/*'
+
+jobs:
+  tolgee-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version-file: 'composer.json'
+
+      - name: Install Dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{secrets.COMPOSER_AUTH}}"} }'
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+      - name: Set namespace prefix
+        run: echo "TOLGEE_NAMESPACE_PREFIX=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')_" >> $GITHUB_ENV
+
+      - name: Upload to Tolgee
+        env:
+          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
+          TOLGEE_NAMESPACE_PREFIX: ${{ env.TOLGEE_NAMESPACE_PREFIX }}
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/staging HEAD | grep '^resources/lang/')
+          for file in $CHANGED_FILES; do
+            file_name=$(basename "$file")
+            php artisan tolgee:update --file="$file_name" --yes-to-all
+          done
+

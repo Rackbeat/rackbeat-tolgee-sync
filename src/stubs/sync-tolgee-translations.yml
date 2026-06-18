@@ -1,0 +1,41 @@
+name: Sync Tolgee Translations
+
+on:
+  pull_request:
+    types: ['opened']
+    branches: [ "master" ]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version-file: 'composer.json'
+
+      - name: Install Dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{secrets.COMPOSER_AUTH}}"} }'
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+      - name: Set namespace prefix
+        run: echo "TOLGEE_NAMESPACE_PREFIX=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')_" >> $GITHUB_ENV
+
+      - name: Sync Tolgee Translations
+        env:
+          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
+          TOLGEE_NAMESPACE_PREFIX: ${{ env.TOLGEE_NAMESPACE_PREFIX }}
+        run: php vendor/rackbeat/rackbeat-tolgee-sync/scripts/syncWithTolgee.php
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "bot@rackbeat.com"
+          git config --global user.name "Rackbeat Bot"
+          git add .
+          git commit -m 'Apply changes from Tolgee' || exit 0
+          git push
+
