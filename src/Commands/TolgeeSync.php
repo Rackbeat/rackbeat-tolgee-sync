@@ -37,9 +37,14 @@ class TolgeeSync extends Command
             return 1;
         }
 
-        $masterKeys = $this->getMasterKeys();
-        $this->info('Searching for new keys...');
+        $project = config('tolgee.base_project');
+        $locales = $this->projectLocales[$project];
 
+        $this->info('Scanning for new keys...');
+        $this->line('Locales to include: <fg=cyan>' . implode(', ', $locales) . '</>');
+        $this->newLine();
+
+        $masterKeys = $this->getMasterKeys();
         $created = 0;
         $skipped = 0;
         $failed  = 0;
@@ -53,26 +58,19 @@ class TolgeeSync extends Command
 
                 if ($this->translationCreated($response)) {
                     $created++;
-                    $this->line("  <fg=green>✓</> Created <fg=cyan>[{$masterKey}]</>");
-                    foreach ($data['translations'] as $locale => $value) {
-                        if (!empty($value)) {
-                            $this->line("      <fg=gray>[{$locale}]</> {$value}");
-                        }
-                    }
-                    $this->continueWithTranslateAndContext($response, $masterKey, $tolgeeBuilder);
+                    $this->line("  <fg=green>✓</> Created  [{$masterKey}]");
                 } else {
                     $skipped++;
                     $errorMessage = isset($response->message) ? $response->message : json_encode($response);
                     $this->warn("  ⚠ Skipped [{$masterKey}]: {$errorMessage}");
                 }
             } catch (\Throwable $e) {
-                // Treat "key already exists" (HTTP 400 key_exists) as a skip, not a failure
                 if (str_contains($e->getMessage(), 'key_exists')) {
                     $skipped++;
-                    $this->line("  <fg=yellow>⏭</> Already exists [{$masterKey}]");
+                    $this->line("  <fg=yellow>⏭</> Exists   [{$masterKey}]");
                 } else {
                     $failed++;
-                    $this->error("  ✗ Failed [{$masterKey}]: " . $e->getMessage());
+                    $this->error("  ✗ Failed  [{$masterKey}]: " . $e->getMessage());
                 }
             }
 
