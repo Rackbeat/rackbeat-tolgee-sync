@@ -71,6 +71,7 @@ class LocalKeyManager {
                     $escaped = str_replace("\n", "\\n", $escaped);
                     $escaped = str_replace("\t", "\\t", $escaped);
                     $escaped = str_replace("\"", "\\\"", $escaped);
+                    $escaped = str_replace("$", "\\$", $escaped);
                     $output .= '"' . $escaped . "\",\n";
                 } else {
                     $escaped = str_replace("\\", "\\\\", $value);
