@@ -10,6 +10,14 @@ class LocalKeyManager {
             return;
         }
 
+        // Sanitize inputs to prevent path traversal
+        $locale = basename(str_replace(['..', '/'], '', $locale));
+        $file = str_replace(['..', '/', '\\'], '', $file);
+
+        if (empty($locale) || empty($file)) {
+            return;
+        }
+
         $path = base_path("resources/lang/{$locale}/" . $file . '.php');
 
         if (file_exists($path)) {
@@ -52,18 +60,22 @@ class LocalKeyManager {
         $output = '';
 
         foreach ($array as $key => $value) {
-            $escapedKey = str_replace("'", "\\'", $key);
-            $output .= str_repeat("\t", $level) . "'{$escapedKey}' => ";
+            $output .= str_repeat("\t", $level) . var_export((string) $key, true) . " => ";
 
             if (is_array($value)) {
                 $output .= "[\n" . $this->formatArray($value, $level + 1) . str_repeat("\t", $level) . "],\n";
             } else {
                 // Check if translation contains '\n' or '\t' and decide whether to use double or single quotes
                 if (strpos($value, "\n") !== false || strpos($value, "\t") !== false) {
-                    $output .= '"' . str_replace("\"", '\\"', str_replace("\t", '\\t', str_replace("\n", '\\n', $value))) . "\",\n";
+                    $escaped = str_replace("\\", "\\\\", $value);
+                    $escaped = str_replace("\n", "\\n", $escaped);
+                    $escaped = str_replace("\t", "\\t", $escaped);
+                    $escaped = str_replace("\"", "\\\"", $escaped);
+                    $output .= '"' . $escaped . "\",\n";
                 } else {
-                    $value = str_replace("'", "\\'", $value);
-                    $output .= "'" . $value . "',\n";
+                    $escaped = str_replace("\\", "\\\\", $value);
+                    $escaped = str_replace("'", "\\'", $escaped);
+                    $output .= "'" . $escaped . "',\n";
                 }
             }
         }
