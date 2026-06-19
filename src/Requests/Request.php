@@ -66,13 +66,16 @@ class Request
     public function post(array $data = [])
     {
         $this->addData($data);
-        $this->addHeader('Content-Type: application/json');
-        $curl = curl_init($this->getURL());
+        $headers = $this->getHeaders();
+        if (! in_array('Content-Type: application/json', $headers, true)) {
+            $headers[] = 'Content-Type: application/json';
+        }
+        $curl = curl_init($this->buildUrl());
 
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $this->requestData);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->getHeaders());
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
 
@@ -100,13 +103,16 @@ class Request
         $url = $this->buildUrl();
 
         $this->addData($data);
-        $this->addHeader('Content-Type: application/json');
+        $headers = $this->getHeaders();
+        if (! in_array('Content-Type: application/json', $headers, true)) {
+            $headers[] = 'Content-Type: application/json';
+        }
         $curl = curl_init($url);
 
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_POSTFIELDS, $this->requestData);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->getHeaders());
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
 

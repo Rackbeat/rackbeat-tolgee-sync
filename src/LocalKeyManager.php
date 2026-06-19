@@ -38,8 +38,12 @@ class LocalKeyManager {
             }
 
             echo "File: {$file} does not exist. Creating..." . PHP_EOL;
-            file_put_contents($path, "<?php\n\nreturn [\n];\n");
-            $this->storeKey($locale, $file, $key, $value);
+            $written = file_put_contents($path, "<?php\n\nreturn [\n];\n");
+            if ($written === false) {
+                echo "Error: Failed to create file {$path}" . PHP_EOL;
+                return;
+           }
+           $this->storeKey($locale, $file, $key, $value);
         }
     }
 
@@ -48,7 +52,8 @@ class LocalKeyManager {
         $output = '';
 
         foreach ($array as $key => $value) {
-            $output .= str_repeat("\t", $level) . "'$key' => ";
+            $escapedKey = str_replace("'", "\\'", $key);
+            $output .= str_repeat("\t", $level) . "'{$escapedKey}' => ";
 
             if (is_array($value)) {
                 $output .= "[\n" . $this->formatArray($value, $level + 1) . str_repeat("\t", $level) . "],\n";
