@@ -4,7 +4,3 @@ parameters:
         - src
     excludePaths:
         - src/config
-    ignoreErrors:
-        - '#Call to an undefined method#'
-    checkMissingIterableValueType: false
-

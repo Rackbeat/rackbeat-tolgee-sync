@@ -121,7 +121,7 @@ class TolgeeBuilder extends Request {
     /**
      * Get page. Pagination starts at 0, max page = total pages - 1
      */
-    public function page(int $page = 1): TolgeeBuilder
+    public function page(int $page = 0): TolgeeBuilder
     {
         $this->addQueryParam('page', $page);
         return $this;

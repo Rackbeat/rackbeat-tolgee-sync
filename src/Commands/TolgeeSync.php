@@ -38,6 +38,10 @@ class TolgeeSync extends Command
         }
 
         $project = config('tolgee.base_project');
+        if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
+            $this->error("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");
+            return self::FAILURE;
+        }
         $locales = $this->projectLocales[$project];
 
         $this->info('Scanning for new keys...');
@@ -155,7 +159,12 @@ class TolgeeSync extends Command
 
     public function addDescriptionForKey($response, string $description, $tolgeeBuilder)
     {
-        $tolgeeBuilder->translations()->find($response->translations->en->id)->comments()->post([
+        $locale = $this->masterLocale;
+        $translationId = $response->translations->{$locale}->id ?? null;
+        if (!$translationId) {
+            return;
+        }
+        $tolgeeBuilder->translations()->find($translationId)->comments()->post([
             'text' => $description,
             'state' => 'RESOLUTION_NOT_NEEDED',
         ]);
@@ -180,6 +189,10 @@ class TolgeeSync extends Command
     {
         if ($project === null) {
             $project = config('tolgee.base_project');
+            if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
+                $this->error("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");
+                return self::FAILURE;
+            }
         }
 
         $parts = explode('.', $masterKey);
@@ -196,6 +209,9 @@ class TolgeeSync extends Command
 
     public function prepareTranslations(string $masterKey, int $project): array
     {
+        if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
+            return [];
+        }
         $translations = [];
         foreach ($this->projectLocales[$project] as $locale) {
             $translations[$locale] = $this->getTranslation($masterKey, $locale);
