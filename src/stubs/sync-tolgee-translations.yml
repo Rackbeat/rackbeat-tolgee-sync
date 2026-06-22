@@ -3,7 +3,7 @@ name: Sync Tolgee Translations
 on:
   pull_request:
     types: ['opened']
-    branches: [ "test-branch" ]
+    branches: [ "main" ]
 
 jobs:
   sync:
