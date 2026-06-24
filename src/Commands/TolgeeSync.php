@@ -62,6 +62,7 @@ class TolgeeSync extends Command
         foreach ($masterKeys as $masterKey) {
             $tolgeeBuilder = $this->getTolgeeBuilder();
             $data = $this->prepareData($masterKey);
+            dd($data);
 
             try {
                 $response = $tolgeeBuilder->keys()->post($data);
