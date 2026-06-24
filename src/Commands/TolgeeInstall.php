@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 class TolgeeInstall extends Command
 {
     protected $signature = 'tolgee:install
-                            {tolgeeBaseUrl: Tolgee base URL} 
+                            {tolgeeBaseUrl : Tolgee base URL} 
                             {--force : Overwrite existing workflow files}';
 
     protected $description = 'Publish GitHub Actions workflow files for Tolgee sync';
