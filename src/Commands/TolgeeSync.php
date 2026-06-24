@@ -25,6 +25,7 @@ class TolgeeSync extends Command
         $this->projectLocales = [
             1 => array_values(json_decode(trim(config('rackbeat-tolgee-sync.project_locales'), "'"), true) ?? []),
         ];
+        dd($this->projectLocales);
         $this->masterLocale = config('rackbeat-tolgee-sync.master_locale');
         $this->masterFolder = config('rackbeat-tolgee-sync.master_folder');
         $this->namespacePrefix = config('rackbeat-tolgee-sync.namespace_prefix');
