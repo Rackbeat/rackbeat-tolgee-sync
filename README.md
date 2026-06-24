@@ -113,7 +113,7 @@ Default configuration:
 
 ```php
 return [
-    'base_url'         => env('TOLGEE_BASE_URL', 'https://translations.rkbt.io/v2/projects'),
+    'base_url'         => env('TOLGEE_BASE_URL'),
     'base_project'     => env('TOLGEE_BASE_PROJECT', 1),
     'sync_state'       => env('TOLGEE_SYNC_STATE', 'REVIEWED'),
     'api_key'          => env('TOLGEE_API_TOKEN'),

@@ -6,12 +6,17 @@ use Illuminate\Console\Command;
 
 class TolgeeInstall extends Command
 {
-    protected $signature = 'tolgee:install {--force : Overwrite existing workflow files}';
+    protected $signature = 'tolgee:install
+                            {tolgee-base-url: Tolgee base URL} 
+                            {--force : Overwrite existing workflow files}';
 
     protected $description = 'Publish GitHub Actions workflow files for Tolgee sync';
 
     public function handle(): int
     {
+        $replacements = [
+            '{{TOLGEE_BASE_URL}}' => $this->argument('tolgee-base-url'),
+        ];
         $workflowDir = base_path('.github/workflows');
 
         if (!is_dir($workflowDir)) {
@@ -31,12 +36,18 @@ class TolgeeInstall extends Command
             $destination = $workflowDir . DIRECTORY_SEPARATOR . $filename;
             $stub        = __DIR__ . '/../stubs/' . $filename;
 
+            $workflow = str_replace(
+                array_keys($replacements),
+                array_values($replacements),
+                $stub
+            );
+
             if (file_exists($destination) && !$this->option('force')) {
                 $this->line("  <fg=yellow>⚠</> Skipped <fg=cyan>.github/workflows/{$filename}</> (already exists, use --force to overwrite)");
                 continue;
             }
 
-            if (!is_file($stub) || !copy($stub, $destination)) {
+            if (!is_file($workflow) || !copy($workflow, $destination)) {
                 $this->error("Failed to publish workflow file: .github/workflows/{$filename}");
                 return self::FAILURE;
             }

@@ -8,6 +8,8 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      TOLGEE_BASE_URL: {{ TOLGEE_BASE_URL }}
     steps:
       - uses: actions/checkout@v3
         with:
