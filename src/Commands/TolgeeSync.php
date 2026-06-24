@@ -23,8 +23,7 @@ class TolgeeSync extends Command
     {
         parent::__construct();
         $this->projectLocales = [
-            1 =>
-                array_values(json_decode(config('rackbeat-tolgee-sync.project_locales'), true) ?? []),
+            1 => array_values(json_decode(trim(config('rackbeat-tolgee-sync.project_locales'), "'"), true) ?? []),
         ];
         $this->masterLocale = config('rackbeat-tolgee-sync.master_locale');
         $this->masterFolder = config('rackbeat-tolgee-sync.master_folder');
