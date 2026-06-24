@@ -37,6 +37,7 @@ class TolgeeInstall extends Command
         $replacements = [
             '{{ TOLGEE_BASE_URL }}' => $tolgeeBaseUrl,
             '{{ PROJECT_LOCALES }}' => "['" . implode("','", $languages) . "']",
+            'default-branch' => $defaultBranch,
         ];
         $workflowDir = base_path('.github/workflows');
 
