@@ -15,7 +15,7 @@ class TolgeeInstall extends Command
     public function handle(): int
     {
         $replacements = [
-            '{{TOLGEE_BASE_URL}}' => $this->argument('tolgeeBaseUrl'),
+            '{{ TOLGEE_BASE_URL }}' => $this->argument('tolgeeBaseUrl'),
         ];
         $workflowDir = base_path('.github/workflows');
 
