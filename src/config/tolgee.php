@@ -4,7 +4,7 @@ return [
     /*
      * Tolgee API Configuration
      */
-    'base_url' => env('TOLGEE_BASE_URL', 'https://translations.rkbt.io/v2/projects'),
+    'base_url' => env('TOLGEE_BASE_URL'),
 
     'base_project' => env('TOLGEE_BASE_PROJECT', 1),
 
