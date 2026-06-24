@@ -28,7 +28,7 @@ return [
      * Languages to sync per project
      */
     'project_locales' => [
-        1 => env('PROJECT_LOCALES')? json_decode(env('PROJECT_LOCALES', '[]'), true) : [],
+        1 => json_decode(env('PROJECT_LOCALES', '[]'), true) ?? [],
     ],
 
     /*
