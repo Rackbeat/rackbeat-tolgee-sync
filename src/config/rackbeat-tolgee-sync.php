@@ -27,9 +27,7 @@ return [
     /*
      * Languages to sync per project
      */
-    'project_locales' => [
-        1 => json_decode(env('PROJECT_LOCALES', '[]'), true) ?? [],
-    ],
+    'project_locales' => env('PROJECT_LOCALES', '[]'),
 
     /*
      * Languages to skip when syncing (without namespace prefix)
