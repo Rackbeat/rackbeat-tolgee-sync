@@ -22,9 +22,6 @@ class TolgeeSync extends Command
     public function __construct()
     {
         parent::__construct();
-//        $this->projectLocales = [
-//            1 => array_values(json_decode(trim(config('rackbeat-tolgee-sync.project_locales'), "'"), true) ?? []),
-//        ];
         $raw = config('rackbeat-tolgee-sync.project_locales');
         $trimmed = trim($raw, "[]'");
         $items = array_map('trim', explode(',', $trimmed));
