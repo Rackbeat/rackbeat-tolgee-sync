@@ -40,10 +40,10 @@ jobs:
         run: echo "TOLGEE_NAMESPACE_PREFIX=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')_" >> $GITHUB_ENV
 
       - name: Set url base
-        run: echo "TOLGEE_BASE_URL=${{ env.TOLGEE_BASE_URL }} >> $GITHUB_ENV
+        run: echo "TOLGEE_BASE_URL=${{ env.TOLGEE_BASE_URL }}" >> $GITHUB_ENV
 
       - name: Set project locales
-        run: echo "TOLGEE_PROJECT_LOCALESL=${{ env.TOLGEE_PROJECT_LOCALES }} >> $GITHUB_ENV
+        run: echo "TOLGEE_PROJECT_LOCALESL=${{ env.TOLGEE_PROJECT_LOCALES }}" >> $GITHUB_ENV
 
       - name: Upload to Tolgee
         env:
