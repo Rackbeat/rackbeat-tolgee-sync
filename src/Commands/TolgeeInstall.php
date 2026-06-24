@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 class TolgeeInstall extends Command
 {
     protected $signature = 'tolgee:install
-                            {tolgeeBaserl: Tolgee base URL} 
+                            {tolgeeBaseUrl: Tolgee base URL} 
                             {--force : Overwrite existing workflow files}';
 
     protected $description = 'Publish GitHub Actions workflow files for Tolgee sync';
@@ -15,7 +15,7 @@ class TolgeeInstall extends Command
     public function handle(): int
     {
         $replacements = [
-            '{{TOLGEE_BASE_URL}}' => $this->argument('tolgee-base-url'),
+            '{{TOLGEE_BASE_URL}}' => $this->argument('tolgeeBaseUrl'),
         ];
         $workflowDir = base_path('.github/workflows');
 
