@@ -32,6 +32,10 @@ class TolgeeSync extends Command
 
     public function handle()
     {
+        $raw = config('rackbeat-tolgee-sync.project_locales');
+        $trimmed = trim($raw, "'");
+        $decoded = json_decode($trimmed, true);
+        dd($raw, $trimmed, $decoded);
         if (empty($this->namespacePrefix)) {
             $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
             $this->line('  env:');
@@ -62,7 +66,6 @@ class TolgeeSync extends Command
         foreach ($masterKeys as $masterKey) {
             $tolgeeBuilder = $this->getTolgeeBuilder();
             $data = $this->prepareData($masterKey);
-            dd($data);
 
             try {
                 $response = $tolgeeBuilder->keys()->post($data);
@@ -216,7 +219,6 @@ class TolgeeSync extends Command
 
     public function prepareTranslations(string $masterKey, int $project): array
     {
-        dd($this->projectLocales);
         if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
             return [];
         }
