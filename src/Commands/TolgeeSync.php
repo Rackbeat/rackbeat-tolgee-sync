@@ -22,9 +22,13 @@ class TolgeeSync extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->projectLocales = [
-            1 => array_values(json_decode(trim(config('rackbeat-tolgee-sync.project_locales'), "'"), true) ?? []),
-        ];
+//        $this->projectLocales = [
+//            1 => array_values(json_decode(trim(config('rackbeat-tolgee-sync.project_locales'), "'"), true) ?? []),
+//        ];
+        $raw = config('rackbeat-tolgee-sync.project_locales');
+        $trimmed = trim($raw, "[]'");
+        $items = array_map('trim', explode(',', $trimmed));
+        $this->projectLocales = [1 => array_values($items)];
         $this->masterLocale = config('rackbeat-tolgee-sync.master_locale');
         $this->masterFolder = config('rackbeat-tolgee-sync.master_folder');
         $this->namespacePrefix = config('rackbeat-tolgee-sync.namespace_prefix');
@@ -32,10 +36,6 @@ class TolgeeSync extends Command
 
     public function handle()
     {
-        $raw = config('rackbeat-tolgee-sync.project_locales');
-        $trimmed = trim($raw, "'");
-        $decoded = json_decode($trimmed, true);
-        dd($raw, $trimmed, $decoded);
         if (empty($this->namespacePrefix)) {
             $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
             $this->line('  env:');
