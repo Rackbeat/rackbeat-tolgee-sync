@@ -60,7 +60,7 @@ class TolgeeInstall extends Command
             $workflow = str_replace(
                 array_keys($replacements),
                 array_values($replacements),
-                $stub
+                file_get_contents($stub)
             );
 
             if (file_exists($destination) && !$force) {
@@ -68,7 +68,7 @@ class TolgeeInstall extends Command
                 continue;
             }
 
-            if (!is_file($workflow) || !copy($workflow, $destination)) {
+            if (!file_put_contents($destination, $workflow)) {
                 $this->error("Failed to publish workflow file: .github/workflows/{$filename}");
                 return self::FAILURE;
             }
