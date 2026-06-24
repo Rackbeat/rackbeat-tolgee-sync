@@ -28,7 +28,7 @@ return [
      * Languages to sync per project
      */
     'project_locales' => [
-        1 => ['en', 'no', 'da', 'sv'],
+        1 => env('TOLGEE_PROJECT_LOCALES'),
     ],
 
     /*

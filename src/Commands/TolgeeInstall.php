@@ -6,24 +6,45 @@ use Illuminate\Console\Command;
 
 class TolgeeInstall extends Command
 {
-    protected $signature = 'tolgee:install
-                            {tolgeeBaseUrl : Tolgee base URL} 
-                            {--force : Overwrite existing workflow files}';
+    protected $signature = 'tolgee:install';
 
     protected $description = 'Publish GitHub Actions workflow files for Tolgee sync';
 
     public function handle(): int
     {
+        do {
+            $tolgeeBaseUrl = $this->ask('What is the Tolgee Base URL?');
+            if(!$tolgeeBaseUrl) {
+                $this->error('Tolgee Base URL is required.');
+            }
+        } while(!$tolgeeBaseUrl);
+        do {
+            $defaultBranch = $this->ask('What is the default branch of the repository?');
+            if(!$defaultBranch) {
+                $this->error('Default branch is required.');
+            }
+        } while(!$defaultBranch);
+        $languages =
+            array_values(array_filter([
+                'en',
+                $this->confirm('Enable Danish for translations?', false)? 'da' : null,
+                $this->confirm('Enable Swedish for translations?', false)? 'sv' : null,
+                $this->confirm('Enable Finnish for translations?', false)? 'fi' : null,
+                $this->confirm('Enable Norwegian for translations?', false)? 'no' : null,
+            ]));
+
+        $force = $this->confirm('Force rebuild existing workflow files?', false);
         $replacements = [
-            '{{ TOLGEE_BASE_URL }}' => $this->argument('tolgeeBaseUrl'),
+            '{{ TOLGEE_BASE_URL }}' => $tolgeeBaseUrl,
+            '{{PROJECT_LOCALES}}' => "['" . implode("','", $languages) . "']",
         ];
         $workflowDir = base_path('.github/workflows');
 
         if (!is_dir($workflowDir)) {
-        if (!mkdir($workflowDir, 0755, true) && !is_dir($workflowDir)) {
-            $this->error("Failed to create directory: {$workflowDir}");
-            return self::FAILURE;
-        }
+            if (!mkdir($workflowDir, 0755, true) && !is_dir($workflowDir)) {
+                $this->error("Failed to create directory: {$workflowDir}");
+                return self::FAILURE;
+            }
             $this->line("  <fg=green>✓</> Created directory <fg=cyan>.github/workflows/</>");
         }
 
@@ -42,7 +63,7 @@ class TolgeeInstall extends Command
                 $stub
             );
 
-            if (file_exists($destination) && !$this->option('force')) {
+            if (file_exists($destination) && !$force) {
                 $this->line("  <fg=yellow>⚠</> Skipped <fg=cyan>.github/workflows/{$filename}</> (already exists, use --force to overwrite)");
                 continue;
             }
@@ -65,4 +86,3 @@ class TolgeeInstall extends Command
         return self::SUCCESS;
     }
 }
-

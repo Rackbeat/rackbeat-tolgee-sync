@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TOLGEE_BASE_URL: {{ TOLGEE_BASE_URL }}
+      PROJECT_LOCALES: {{ PROJECT_LOCALES }}
     steps:
       - uses: actions/checkout@v3
         with:
