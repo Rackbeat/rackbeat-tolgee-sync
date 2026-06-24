@@ -22,10 +22,10 @@ class TolgeeSync extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->projectLocales = config('tolgee.project_locales');
-        $this->masterLocale = config('tolgee.master_locale');
-        $this->masterFolder = config('tolgee.master_folder');
-        $this->namespacePrefix = config('tolgee.namespace_prefix');
+        $this->projectLocales = config('rackbeat-tolgee-sync.project_locales');
+        $this->masterLocale = config('rackbeat-tolgee-sync.master_locale');
+        $this->masterFolder = config('rackbeat-tolgee-sync.master_folder');
+        $this->namespacePrefix = config('rackbeat-tolgee-sync.namespace_prefix');
     }
 
     public function handle()
@@ -37,7 +37,7 @@ class TolgeeSync extends Command
             return 1;
         }
 
-        $project = config('tolgee.base_project');
+        $project = config('rackbeat-tolgee-sync.base_project');
         if (!isset($this->projectLocales[$project])) {
             $this->error("Invalid tolgee.base_project [{$project}]");
             throw new \RuntimeException("Invalid tolgee.base_project [{$project}]");
@@ -92,8 +92,8 @@ class TolgeeSync extends Command
     protected function getTolgeeBuilder(): TolgeeBuilder
     {
         // Use ?: instead of ?? to also catch empty string tokens
-        $apiKey = $this->option('tolgee-token') ?: config('tolgee.api_key');
-        return (new TolgeeBuilder($apiKey))->setProject(config('tolgee.base_project'));
+        $apiKey = $this->option('tolgee-token') ?: config('rackbeat-tolgee-sync.api_key');
+        return (new TolgeeBuilder($apiKey))->setProject(config('rackbeat-tolgee-sync.base_project'));
     }
 
     public function translationCreated($response): bool
@@ -192,7 +192,7 @@ class TolgeeSync extends Command
     public function prepareData(string $masterKey, int $project = null): array
     {
         if ($project === null) {
-            $project = config('tolgee.base_project');
+            $project = config('rackbeat-tolgee-sync.base_project');
             if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
                 $this->error("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");
                 throw new \RuntimeException("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");

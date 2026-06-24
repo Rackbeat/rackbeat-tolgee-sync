@@ -11,7 +11,7 @@ class TolgeeBuilder extends Request {
 
     public function __construct(string $tolgeeAPIKey)
     {
-        parent::__construct(config('tolgee.base_url'), $this->XApiKeyHeader($tolgeeAPIKey));
+        parent::__construct(config('rackbeat-tolgee-sync.base_url'), $this->XApiKeyHeader($tolgeeAPIKey));
     }
 
     /** ROUTES */

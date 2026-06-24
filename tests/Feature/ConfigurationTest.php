@@ -9,18 +9,18 @@ class ConfigurationTest extends TestCase
     /** @test */
     public function it_loads_configuration_correctly(): void
     {
-        $this->assertEquals('https://translations.rkbt.io/v2/projects', config('tolgee.base_url'));
-        $this->assertEquals(1, config('tolgee.base_project'));
-        $this->assertEquals('REVIEWED', config('tolgee.sync_state'));
-        $this->assertEquals('test-api-key', config('tolgee.api_key'));
-        $this->assertEquals('test_', config('tolgee.namespace_prefix'));
-        $this->assertEquals('en', config('tolgee.master_locale'));
+        $this->assertEquals('https://translations.rkbt.io/v2/projects', config('rackbeat-tolgee-sync.base_url'));
+        $this->assertEquals(1, config('rackbeat-tolgee-sync.base_project'));
+        $this->assertEquals('REVIEWED', config('rackbeat-tolgee-sync.sync_state'));
+        $this->assertEquals('test-api-key', config('rackbeat-tolgee-sync.api_key'));
+        $this->assertEquals('test_', config('rackbeat-tolgee-sync.namespace_prefix'));
+        $this->assertEquals('en', config('rackbeat-tolgee-sync.master_locale'));
     }
 
     /** @test */
     public function it_has_project_locales_configured(): void
     {
-        $locales = config('tolgee.project_locales');
+        $locales = config('rackbeat-tolgee-sync.project_locales');
 
         $this->assertIsArray($locales);
         $this->assertArrayHasKey(1, $locales);
@@ -36,7 +36,7 @@ class ConfigurationTest extends TestCase
         $paths = \Illuminate\Support\ServiceProvider::pathsToPublish(
             \Rackbeat\TolgeeSync\TolgeeSyncServiceProvider::class);
         $this->assertNotEmpty($paths);
-        $this->assertContains(config_path('tolgee.php'), array_values($paths));
+        $this->assertContains(config_path('rackbeat-tolgee-sync.php'), array_values($paths));
     }
 }
 

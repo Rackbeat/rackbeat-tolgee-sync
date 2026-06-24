@@ -13,7 +13,7 @@ $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 use Rackbeat\TolgeeSync\Builders\TolgeeBuilder;
 use Rackbeat\TolgeeSync\LocalKeyManager;
 
-$tolgeeBuilder = new TolgeeBuilder(config('tolgee.api_key'));
+$tolgeeBuilder = new TolgeeBuilder(config('rackbeat-tolgee-sync.api_key'));
 $localManager = new LocalKeyManager();
 $projects = getProjects($tolgeeBuilder);
 $languagesSynced = [];
@@ -53,9 +53,9 @@ foreach ($projects as $project) {
 }
 
 function unpackAndStore($translations, $localManager) {
-    $namespacePrefix = config('tolgee.namespace_prefix');
-    $skipNamespaces  = config('tolgee.skip_namespaces');
-    $syncState       = config('tolgee.sync_state');
+    $namespacePrefix = config('rackbeat-tolgee-sync.namespace_prefix');
+    $skipNamespaces  = config('rackbeat-tolgee-sync.skip_namespaces');
+    $syncState       = config('rackbeat-tolgee-sync.sync_state');
 
     if (empty($namespacePrefix)) {
         echo 'Error: TOLGEE_NAMESPACE_PREFIX is not set. Set it in your workflow:' . PHP_EOL;
