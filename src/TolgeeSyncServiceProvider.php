@@ -11,7 +11,7 @@ class TolgeeSyncServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/config/rackbeat-tolgee-sync.php', 'rackeat-tolgee-sync'
+            __DIR__ . '/config/rackbeat-tolgee-sync.php', 'rackbeat-tolgee-sync'
         );
     }
 
