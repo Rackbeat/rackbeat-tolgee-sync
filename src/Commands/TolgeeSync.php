@@ -38,9 +38,13 @@ class TolgeeSync extends Command
         }
 
         $project = config('tolgee.base_project');
-        if (!isset($this->projectLocales[$project]) || !is_array($this->projectLocales[$project])) {
-            $this->error("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");
-            throw new \RuntimeException("Invalid tolgee.base_project [{$project}] or missing tolgee.project_locales mapping.");
+        if (!isset($this->projectLocales[$project])) {
+            $this->error("Invalid tolgee.base_project [{$project}]");
+            throw new \RuntimeException("Invalid tolgee.base_project [{$project}]");
+        }
+        if (!is_array($this->projectLocales[$project])) {
+            $this->error("Missing tolgee.project_locales mapping.");
+            throw new \RuntimeException("Missing tolgee.project_locales mapping.");
         }
         $locales = $this->projectLocales[$project];
 
