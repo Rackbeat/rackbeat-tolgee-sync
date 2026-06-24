@@ -6,7 +6,7 @@
 
 - ✅ Upload translation keys from Laravel to Tolgee
 - ✅ Download reviewed translations from Tolgee to Laravel
-- ✅ Support for multiple languages (en, no, da, sv)
+- ✅ Support for multiple languages (en, no, da, sv, fi)
 - ✅ Automatic namespace prefixing
 - ✅ GitHub Actions integration
 - ✅ Command-line interface
@@ -33,6 +33,9 @@ Add to your project's `composer.json`:
 ```bash
 composer require rackbeat/rackbeat-tolgee-sync
 ```
+Before running the command, make sure to:
+1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets - organization secret for now
+2. Add `COMPOSER_AUTH` to your GitHub repository secrets - organization secret for now
 
 ### 3. Publish GitHub Actions Workflows
 
@@ -41,22 +44,12 @@ Run this command to automatically create both workflow files:
 ```bash
 php artisan tolgee:install
 ```
+Fill in the requested information when prompted (Tolgee Base URL, default branch name, languages and if we allow override of workflow files).
+Base URL should be `https://translations.rkbt.io/v2/projects` and default branch name is usually `main`.
 
 This will create:
 - `.github/workflows/auto-upload-translation-keys.yml` — uploads changed keys on push
-- `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR
-
-To overwrite existing files:
-
-```bash
-php artisan tolgee:install --force
-```
-
-
-After running the command, make sure to:
-1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets
-2. Add `COMPOSER_AUTH` to your GitHub repository secrets
-3. Update the branch name in `sync-tolgee-translations.yml` if needed (default: `master`)
+- `.github/workflows/sync-tolgee-translations.yml` — downloads reviewed translations on PR creation with the target branch being the default branch (e.g., `main`)
 
 > Configuration is done via GitHub Secrets and environment variables, so no additional setup is required after installation.
 
@@ -120,9 +113,7 @@ return [
     'namespace_prefix' => env('TOLGEE_NAMESPACE_PREFIX'), // ⚠️ Set via TOLGEE_NAMESPACE_PREFIX env var. Must end with underscore and be lowercase. In GitHub Actions, use: ${{ github.event.repository.name }}_
     'master_locale'    => env('TOLGEE_MASTER_LOCALE', 'en'),
     'master_folder'    => 'resources/lang',
-    'project_locales'  => [
-        1 => ['en', 'no', 'da', 'sv'],
-    ],
+    'project_locales'  =>  1 => env('TOLGEE_PROJECT_LOCALES'),
     'skip_namespaces'  => [],
 ];
 ```
