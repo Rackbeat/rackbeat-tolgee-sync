@@ -12,12 +12,12 @@ class TolgeeInstall extends Command
 
     public function handle(): int
     {
-        do {
-            $tolgeeBaseUrl = $this->ask('What is the Tolgee Base URL?');
-            if(!$tolgeeBaseUrl) {
-                $this->error('Tolgee Base URL is required.');
-            }
-        } while(!$tolgeeBaseUrl);
+//        do {
+//            $tolgeeBaseUrl = $this->ask('What is the Tolgee Base URL?');
+//            if(!$tolgeeBaseUrl) {
+//                $this->error('Tolgee Base URL is required.');
+//            }
+//        } while(!$tolgeeBaseUrl);
         do {
             $defaultBranch = $this->ask('What is the default branch of the repository?');
             if(!$defaultBranch) {
@@ -35,7 +35,7 @@ class TolgeeInstall extends Command
 
         $force = $this->confirm('Force rebuild existing workflow files?', false);
         $replacements = [
-            '{{ TOLGEE_BASE_URL }}' => $tolgeeBaseUrl,
+//            '{{ TOLGEE_BASE_URL }}' => $tolgeeBaseUrl,
             '{{ PROJECT_LOCALES }}' => '\'["' . implode('","', $languages) . '"]\'',
             'default-branch' => $defaultBranch,
         ];
