@@ -33,7 +33,6 @@ class TolgeeSync extends Command
 
     public function handle()
     {
-        dd(config('rackbeat-tolgee-sync.base_url'));
         if (empty($this->namespacePrefix)) {
             $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
             $this->line('  env:');

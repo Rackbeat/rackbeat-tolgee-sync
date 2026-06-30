@@ -36,6 +36,7 @@ composer require rackbeat/rackbeat-tolgee-sync
 Before running the command, make sure to:
 1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets - organization secret for now
 2. Add `COMPOSER_AUTH` to your GitHub repository secrets - organization secret for now
+3. Add `TOLGEE_BASE_URL` to your GitHub repository secrets - organization secret for now
 
 ### 3. Publish GitHub Actions Workflows
 
