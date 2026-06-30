@@ -22,7 +22,6 @@ class TolgeeSync extends Command
     public function __construct()
     {
         parent::__construct();
-        dd(config('rackbeat-tolgee-sync.base_url'));
         $raw = config('rackbeat-tolgee-sync.project_locales');
         $trimmed = trim($raw, "[]'");
         $items = array_map('trim', explode(',', $trimmed));
@@ -34,6 +33,7 @@ class TolgeeSync extends Command
 
     public function handle()
     {
+        dd(config('rackbeat-tolgee-sync.base_url'));
         if (empty($this->namespacePrefix)) {
             $this->error('TOLGEE_NAMESPACE_PREFIX is not set. Set it via the environment variable or in your workflow:');
             $this->line('  env:');
