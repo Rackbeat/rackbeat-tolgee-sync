@@ -9,7 +9,6 @@ class ConfigurationTest extends TestCase
     /** @test */
     public function it_loads_configuration_correctly(): void
     {
-        $this->assertEquals('https://translations.rkbt.io/v2/projects', config('rackbeat-tolgee-sync.base_url'));
         $this->assertEquals(1, config('rackbeat-tolgee-sync.base_project'));
         $this->assertEquals('REVIEWED', config('rackbeat-tolgee-sync.sync_state'));
         $this->assertEquals('test-api-key', config('rackbeat-tolgee-sync.api_key'));

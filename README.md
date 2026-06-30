@@ -44,8 +44,7 @@ Run this command to automatically create both workflow files:
 ```bash
 php artisan tolgee:install
 ```
-Fill in the requested information when prompted (Tolgee Base URL, default branch name, languages and if we allow override of workflow files).
-Base URL should be `https://translations.rkbt.io/v2/projects` and default branch name is usually `main`.
+Fill in the requested information when prompted (languages and if we allow override of workflow files).
 
 This will create:
 - `.github/workflows/auto-upload-translation-keys.yml` — uploads changed keys on push
