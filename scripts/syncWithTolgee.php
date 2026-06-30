@@ -13,10 +13,6 @@ $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 use Rackbeat\TolgeeSync\Builders\TolgeeBuilder;
 use Rackbeat\TolgeeSync\LocalKeyManager;
 
-$test = config('rackbeat-tolgee-sync.api_key');
-echo $test;
-exit(0);
-
 $tolgeeBuilder = new TolgeeBuilder(config('rackbeat-tolgee-sync.api_key'));
 $localManager = new LocalKeyManager();
 $projects = getProjects($tolgeeBuilder);
