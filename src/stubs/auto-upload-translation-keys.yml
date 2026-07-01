@@ -1,0 +1,64 @@
+name: Upload Translations
+
+on:
+  push:
+    paths:
+      - 'resources/lang/**/*'
+
+jobs:
+  tolgee-sync:
+    runs-on: ubuntu-latest
+    env:
+      TOLGEE_BASE_URL: ${{ vars.TOLGEE_BASE_URL }}
+      PROJECT_LOCALES: {{ PROJECT_LOCALES }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get PHP version from composer.json
+        id: php-version
+        run: |
+          CONSTRAINT=$(jq -r '.require.php // "8.2"' composer.json)
+          PHP_VERSION=$(echo "$CONSTRAINT" | grep -oP '\d+\.\d+' | head -1)
+          # Enforce minimum PHP 7.4 (required by rackbeat/rackbeat-tolgee-sync)
+          if [ "$(echo "$PHP_VERSION 7.4" | tr ' ' '\n' | sort -V | head -1)" != "7.4" ]; then
+            PHP_VERSION="7.4"
+          fi
+          echo "version=${PHP_VERSION:-8.2}" >> $GITHUB_OUTPUT
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ steps.php-version.outputs.version }}
+
+      - name: Install Dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{secrets.COMPOSER_AUTH}}"} }'
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+      - name: Set namespace prefix
+        run: echo "TOLGEE_NAMESPACE_PREFIX=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')_" >> $GITHUB_ENV
+
+      - name: Set url base
+        run: echo "TOLGEE_BASE_URL=${{ env.TOLGEE_BASE_URL }}" >> $GITHUB_ENV
+
+      - name: Set project locales
+        run: echo "PROJECT_LOCALES=${{ env.PROJECT_LOCALES }}" >> $GITHUB_ENV
+
+      - name: Upload to Tolgee
+        env:
+          TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
+          TOLGEE_NAMESPACE_PREFIX: ${{ env.TOLGEE_NAMESPACE_PREFIX }}
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/staging HEAD | grep '^resources/lang/' || true)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No changed files found. Exiting."
+            exit 0
+          fi
+          for file in $CHANGED_FILES; do
+            file_name=$(basename "$file")
+            php artisan tolgee:update --file="$file_name" --yes-to-all
+          done
+

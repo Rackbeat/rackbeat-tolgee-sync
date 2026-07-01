@@ -1,0 +1,57 @@
+{
+    "name": "rackbeat/rackbeat-tolgee-sync",
+    "description": "Bi-directional synchronization between Laravel translations and Tolgee translation management platform",
+    "type": "library",
+    "license": "proprietary",
+    "keywords": [
+        "rackbeat",
+        "laravel",
+        "tolgee",
+        "translation",
+        "i18n",
+        "localization"
+    ],
+    "require": {
+        "php": "^7.4|^8.0|^8.1|^8.2|^8.3|^8.4",
+        "illuminate/console": "^8.0|^10.0|^11.0|^12.0",
+        "illuminate/support": "^8.0|^10.0|^11.0|^12.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^10.5.62|^11.5.50",
+        "phpstan/phpstan": "^1.10",
+        "friendsofphp/php-cs-fixer": "^3.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rackbeat\\TolgeeSync\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rackbeat\\TolgeeSync\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "analyse": "vendor/bin/phpstan analyse",
+        "format": "vendor/bin/php-cs-fixer fix",
+        "format-check": "vendor/bin/php-cs-fixer fix --dry-run --diff"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rackbeat\\TolgeeSync\\TolgeeSyncServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
+
