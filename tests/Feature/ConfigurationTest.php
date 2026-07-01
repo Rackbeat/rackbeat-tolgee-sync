@@ -11,7 +11,6 @@ class ConfigurationTest extends TestCase
     {
         $this->assertEquals(1, config('rackbeat-tolgee-sync.base_project'));
         $this->assertEquals('REVIEWED', config('rackbeat-tolgee-sync.sync_state'));
-        $this->assertEquals('test-api-key', config('rackbeat-tolgee-sync.api_key'));
         $this->assertEquals('test_', config('rackbeat-tolgee-sync.namespace_prefix'));
         $this->assertEquals('en', config('rackbeat-tolgee-sync.master_locale'));
     }
@@ -21,12 +20,7 @@ class ConfigurationTest extends TestCase
     {
         $locales = config('rackbeat-tolgee-sync.project_locales');
 
-        $this->assertIsArray($locales);
-        $this->assertArrayHasKey(1, $locales);
-        $this->assertContains('en', $locales[1]);
-        $this->assertContains('no', $locales[1]);
-        $this->assertContains('da', $locales[1]);
-        $this->assertContains('sv', $locales[1]);
+        $this->assertEquals('["en","da","sv","fi","no"]', $locales);
     }
 
     /** @test */

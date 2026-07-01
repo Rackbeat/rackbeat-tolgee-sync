@@ -22,17 +22,15 @@ abstract class TestCase extends Orchestra
     protected function getEnvironmentSetUp($app): void
     {
         // Setup default configuration
-        config()->set('tolgee.base_url', 'https://translations.rkbt.io/v2/projects');
-        config()->set('tolgee.base_project', 1);
-        config()->set('tolgee.sync_state', 'REVIEWED');
-        config()->set('tolgee.api_key', 'test-api-key');
-        config()->set('tolgee.namespace_prefix', 'test_');
-        config()->set('tolgee.master_locale', 'en');
-        config()->set('tolgee.master_folder', 'resources/lang');
-        config()->set('tolgee.project_locales', [
-            1 => ['en', 'no', 'da', 'sv'],
-        ]);
-        config()->set('tolgee.skip_namespaces', []);
+        config()->set('rackbeat-tolgee-sync.base_url', 'test-url');
+        config()->set('rackbeat-tolgee-sync.base_project', 1);
+        config()->set('rackbeat-tolgee-sync.sync_state', 'REVIEWED');
+        config()->set('rackbeat-tolgee-sync.api_key', 'test-api-key');
+        config()->set('rackbeat-tolgee-sync.namespace_prefix', 'test_');
+        config()->set('rackbeat-tolgee-sync.master_locale', 'en');
+        config()->set('rackbeat-tolgee-sync.master_folder', 'resources/lang');
+        config()->set('rackbeat-tolgee-sync.project_locales', '["en","da","sv","fi","no"]');
+        config()->set('rackbeat-tolgee-sync.skip_namespaces', []);
     }
 }
 
