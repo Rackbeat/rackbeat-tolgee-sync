@@ -50,7 +50,7 @@ jobs:
           TOLGEE_API_TOKEN: ${{ secrets.TOLGEE_API_TOKEN }}
           TOLGEE_NAMESPACE_PREFIX: ${{ env.TOLGEE_NAMESPACE_PREFIX }}
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/development HEAD | grep '^resources/lang/' || true)
+          CHANGED_FILES=$(git diff --name-only origin/staging HEAD | grep '^resources/lang/' || true)
           echo "Changed files:"
           echo "$CHANGED_FILES"
           if [ -z "$CHANGED_FILES" ]; then
