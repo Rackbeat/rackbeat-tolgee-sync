@@ -31,7 +31,7 @@ Add to your project's `composer.json`:
 ### 2. Require the Package
 
 ```bash
-composer require rackbeat/rackbeat-tolgee-sync
+composer require rackbeat/rackbeat-tolgee-sync:dev-main
 ```
 Before running the command, make sure to:
 1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets - organization secret for now
