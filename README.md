@@ -30,8 +30,16 @@ Add to your project's `composer.json`:
 
 ### 2. Require the Package
 
+Add to the `require` section of your `composer.json`:
+
+```json
+"rackbeat/rackbeat-tolgee-sync": "dev-main"
+```
+
+Then run:
+
 ```bash
-composer require rackbeat/rackbeat-tolgee-sync
+composer install
 ```
 Before running the command, make sure to:
 1. Add `TOLGEE_API_TOKEN` to your GitHub repository secrets - organization secret for now
