@@ -18,7 +18,6 @@ phpstan.neon.dist
 .vscode/
 
 # CI/CD
-.github/workflows/
 
 # Internal planning & utility scripts (not needed by consumers)
 ACTION-PLAN.md
