@@ -50,11 +50,8 @@ class Request
 
         if (curl_errno($curl)) {
             $error = curl_error($curl);
-            curl_close($curl);
             throw TolgeeException::apiRequestFailed($error);
         }
-
-        curl_close($curl);
 
         if ($httpCode >= 400) {
             throw TolgeeException::apiRequestFailed("HTTP {$httpCode}: {$output}", $httpCode);
@@ -84,11 +81,8 @@ class Request
 
         if (curl_errno($curl)) {
             $error = curl_error($curl);
-            curl_close($curl);
             throw TolgeeException::apiRequestFailed($error);
         }
-
-        curl_close($curl);
 
         // 409 = key already exists in Tolgee — return decoded so caller can handle gracefully
         if ($httpCode >= 400 && $httpCode !== 409) {
@@ -121,11 +115,8 @@ class Request
 
         if (curl_errno($curl)) {
             $error = curl_error($curl);
-            curl_close($curl);
             throw TolgeeException::apiRequestFailed($error);
         }
-
-        curl_close($curl);
 
         if ($httpCode >= 400) {
             throw TolgeeException::apiRequestFailed("HTTP {$httpCode}: {$response}", $httpCode);
